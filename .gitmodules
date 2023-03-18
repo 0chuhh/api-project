@@ -1,0 +1,3 @@
+[submodule "api-project-frontend"]
+	path = api-project-frontend
+	url = https://github.com/0chuhh/api-project-frontend.git
