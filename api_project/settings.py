@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'apps',
+    'django_filters',
     'rest_framework',
     "corsheaders"
 ]
@@ -70,6 +71,10 @@ TEMPLATES = [
         },
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}
 
 WSGI_APPLICATION = 'api_project.wsgi.application'
 

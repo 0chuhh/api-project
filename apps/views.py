@@ -3,7 +3,7 @@ from .models import Category, Status, Product, Cart, CartDetails, Pay, Delivery,
 from rest_framework import permissions, viewsets, generics
 from .serializers import CategorySerializer, StatusSerializer, ProductSerializer, CartSerializer, CartDetailsSerializer, PaySerializer, DeliverySerializer, OrdersSerializer, OrderDetailsSerializer
 # Create your views here.
-
+import django_filters.rest_framework
 
 class CategoryApiView(generics.ListAPIView):
     queryset = Category.objects.all()
@@ -18,7 +18,8 @@ class StatusApiView(generics.ListCreateAPIView):
 class ProductApiView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filterset_fields = ['category']
     
 class CartApiView(generics.ListAPIView):
     queryset = Cart.objects.all()
