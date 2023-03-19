@@ -1,13 +1,15 @@
-from django.urls import path, re_path
+from django.urls import include, path, re_path
 from .views import CategoryApiView, StatusApiView, ProductApiView, CartApiView, CartDetailsApiView, PayApiView, DeliveryApiView, OrdersApiView, OrderDetailsApiView
 from django.conf.urls.static import static
 from django.conf import settings
-
+from rest_framework import routers
+router = routers.SimpleRouter()
+router.register(r'cart', CartApiView)
 urlpatterns = [
     path('products/categories/', CategoryApiView.as_view()),
     path('cart/statuses/', StatusApiView.as_view()),
     path('products/', ProductApiView.as_view()),
-    path('cart/', CartApiView.as_view()),
+    path('', include(router.urls)),
     path('cart/details/', CartDetailsApiView.as_view()),
     path('pay/', PayApiView.as_view()),
     path('delivery/', DeliveryApiView.as_view()),
