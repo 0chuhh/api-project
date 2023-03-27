@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'apps',
     'django_filters',
     'rest_framework',
-    "corsheaders"
+    "corsheaders",
+    "rest_framework.authtoken"
 ]
 
 MIDDLEWARE = [
@@ -73,7 +74,11 @@ TEMPLATES = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication', 
+        'rest_framework.authentication.BasicAuthentication', # <-- And here
+    ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend',]
 }
 
 WSGI_APPLICATION = 'api_project.wsgi.application'
