@@ -12,32 +12,65 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from rest_framework.response import Response
+from rest_framework.authentication import get_authorization_header
 
+class GetAuthToken(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
-class GetAuthToken(ObtainAuthToken):
+    def list(self, request, *args, **kwargs):
+        users = User.objects.all()
+        users_tokens = []
+        for user in users:
+            token, created = Token.objects.get_or_create(user=user)
+            users_tokens.append({'username':user.username,'user_id': user.pk,
+            'email': user.email, 'token': token.key})
+        return Response(users_tokens)
 
-    def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data,
-                                           context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        token, created = Token.objects.get_or_create(user=user)
+    @action(detail=False, methods=['get'])
+    def me(self, request, *args, **kwargs):
+        token = str(get_authorization_header(request).decode('UTF-8'))
+        user = Token.objects.get(key=token).user
         return Response({
-            'token': token.key,
+            'token': token,
             'user_id': user.pk,
             'email': user.email,
-            'name': user.username
+            'username': user.username
         })
+        
+    def create(self, request, *args, **kwargs):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = User.objects.get(username=serializer.data['username'])
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({
+                'token': token.key,
+                'user_id': user.pk,
+                'email': user.email,
+                'username': user.username
+            })
+    
+    def get_permissions(self):
+        if self.action == 'list':
+            permission_classes = [permissions.IsAdminUser]
+        else:
+            permission_classes = []
+        return [permission() for permission in permission_classes]
+    
+    
 
 class Users(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+    
 
     def list(self, request, *args, **kwargs):
         queryset = User.objects.all()
         serializer = UserSerializer(queryset, many=True)
         permission_classes = permissions.IsAdminUser
         return Response(serializer.data)
+    
 
     def create(self, request, *args, **kwargs):
         serializer = UserSerializer(data=request.data)
@@ -55,7 +88,7 @@ class Users(viewsets.ModelViewSet):
             'token': token.key,
             'user_id': user.pk,
             'email': user.email,
-            'name': user.username
+            'username': user.username
         })
     
     def get_permissions(self):

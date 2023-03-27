@@ -3,7 +3,7 @@ from .models import Category, Status, Product, Cart, CartDetails, Pay, Delivery,
 from django.contrib.auth.models import User
 
 class UserSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    email = serializers.EmailField(required=False)
     username = serializers.CharField(max_length=100)
     password = serializers.CharField(max_length=100)
 
