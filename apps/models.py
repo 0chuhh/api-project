@@ -1,4 +1,8 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+from django.conf import settings
+User = get_user_model()
+
 
 # Create your models here.
 class Category(models.Model):
@@ -39,30 +43,6 @@ class Product(models.Model):
         return self.name
 
 
-class Cart(models.Model):
-    guest_session_id = models.CharField(max_length=200)
-    date_create = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = 'Элемент корзины'
-        verbose_name_plural = 'Корзина'
-
-    def __str__(self):
-        return f'{self.guest_session_id} - {self.date_create}'
-
-
-class CartDetails(models.Model):
-    cart_id = models.ForeignKey(to=Cart, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-
-    count = models.IntegerField()
-
-    class Meta:
-        verbose_name = 'Элемент деталей корзины'
-        verbose_name_plural = 'Детали корзины'
-    def __str__(self):
-        return f'{self.cart_id} - {self.product.name}'
-
 
 class Pay(models.Model):
     name = models.CharField(max_length=100)
@@ -76,7 +56,7 @@ class Delivery(models.Model):
 
 
 class Orders(models.Model):
-    guest_session_id = models.CharField(max_length=200, verbose_name='ИД сессии гостя')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='пользователь')
     date_create = models.DateTimeField(auto_now=True, verbose_name='Дата создания')
     pay = models.ForeignKey(Pay, on_delete=models.CASCADE, null=True, verbose_name='Способ оплаты')
     delivery = models.ForeignKey(Delivery, on_delete=models.CASCADE, null=True, verbose_name='Способ доставки')
@@ -90,7 +70,7 @@ class Orders(models.Model):
         verbose_name_plural = 'заказы'
 
     def __str__(self):
-        return f'{self.guest_session_id} - {self.date_create} - {self.status}'
+        return f'{self.user.get_username()} - {self.date_create} - {self.status}'
 
 class OrderDetails(models.Model):
     order_id = models.ForeignKey(to=Orders, on_delete=models.CASCADE, verbose_name='ИД заказа')
