@@ -14,7 +14,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('pay/', PayApiView.as_view()),
     path('delivery/', DeliveryApiView.as_view()),
-    path('orders/details/', OrderDetailsApiView.as_view()),
+    path('order/details/', OrderDetailsApiView.as_view()),
     
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,1 +1,1 @@
-open("db-new.json","wb").write(open("db.json").read().encode("utf8"))
+open("db-new.json","wb").write(open("db.json", 'rb').read().decode("unicode_escape").encode("utf8"))
