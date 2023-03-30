@@ -24,9 +24,10 @@ class StatusSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    category = CategorySerializer(read_only=True)
     class Meta:
         model = Product
-        fields = '__all__'
+        fields = ('id', 'name', 'price', 'category', 'description', 'image')
 
     
 class PaySerializer(serializers.ModelSerializer):
@@ -41,14 +42,21 @@ class DeliverySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class OrdersSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Orders
-        fields = '__all__'
-
+        
 
 class OrderDetailsSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
+    
     class Meta:
         model = OrderDetails
-        fields = '__all__'
+        fields = ('id', 'product', 'count')
 
+
+class OrdersSerializer(serializers.ModelSerializer):
+    order_details = OrderDetailsSerializer(many=True, read_only=True)
+    pay = PaySerializer(read_only=True)
+    delivery = DeliverySerializer(read_only=True)
+    status = StatusSerializer(read_only=True)
+    class Meta:
+        model = Orders
+        fields = ('id', 'address', 'delivery', 'pay', 'number', 'status','total_sum', 'order_details')

@@ -16,7 +16,7 @@ from rest_framework.authentication import get_authorization_header
 
 
 class GetAuthToken(viewsets.ModelViewSet):
-    queryset = User.objects.all()
+    queryset = User.objects.none()
     serializer_class = UserSerializer
 
     def list(self, request, *args, **kwargs):
@@ -30,10 +30,10 @@ class GetAuthToken(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def me(self, request, *args, **kwargs):
-        token = str(get_authorization_header(request).decode('UTF-8'))
-        user = Token.objects.get(key=token).user
+        user = request.user
+        token = Token.objects.get(user=user) 
         return Response({
-            'token': token,
+            'token': token.key,
             'user_id': user.pk,
             'email': user.email,
             'username': user.username
@@ -124,7 +124,7 @@ class DeliveryApiView(generics.ListAPIView):
 
 
 class OrdersApiView(viewsets.ModelViewSet):
-    queryset = Orders.objects.all()
+    queryset = Orders.objects.none()
     serializer_class = OrdersSerializer
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
@@ -132,9 +132,16 @@ class OrdersApiView(viewsets.ModelViewSet):
         Orders.objects.all().delete()
         OrderDetails.objects.all().delete()
 
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated]) 
+    def my_orders(self, request, pk=None):
+        orders = Orders.objects.filter(user=request.user)
+        serializer = OrdersSerializer(orders, many=True)
+        return Response(serializer.data)
+
+    
+    
     def create(self, request, *args, **kwargs):
-        token = str(get_authorization_header(request).decode('UTF-8'))
-        user = Token.objects.get(key=token).user
+        user = request.user
         order, created = Orders.objects.get_or_create(
             user=user, delivery_id=request.data['delivery'], pay_id=request.data['pay'], 
             number=request.data['number'], total_sum=request.data['total_sum'])

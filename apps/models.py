@@ -32,7 +32,7 @@ class Product(models.Model):
     name = models.CharField(max_length=100, verbose_name='Наименование')
     price = models.IntegerField(verbose_name='Цена')
     image = models.ImageField(upload_to='static/images', verbose_name='Фото')
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория')
+    category = models.ForeignKey(Category, related_name='category', on_delete=models.CASCADE, verbose_name='Категория')
     description = models.CharField(max_length=300, null=True, verbose_name='Описание')
 
     class Meta:
@@ -58,11 +58,11 @@ class Delivery(models.Model):
 class Orders(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='пользователь')
     date_create = models.DateTimeField(auto_now=True, verbose_name='Дата создания')
-    pay = models.ForeignKey(Pay, on_delete=models.CASCADE, null=True, verbose_name='Способ оплаты')
-    delivery = models.ForeignKey(Delivery, on_delete=models.CASCADE, null=True, verbose_name='Способ доставки')
+    pay = models.ForeignKey(Pay, related_name='pay', on_delete=models.CASCADE, null=True, verbose_name='Способ оплаты')
+    delivery = models.ForeignKey(Delivery, related_name='delivery', on_delete=models.CASCADE, null=True, verbose_name='Способ доставки')
     address = models.CharField(max_length=200, null=True, verbose_name='Адрес')
     number = models.CharField(max_length=11, null=True, verbose_name='Номер телефона')
-    status = models.ForeignKey(Status, on_delete=models.CASCADE, null=True, verbose_name='Статус')
+    status = models.ForeignKey(Status, related_name='status', on_delete=models.CASCADE, null=True, verbose_name='Статус')
     total_sum = models.DecimalField(null=True, max_digits=20, decimal_places=2, verbose_name='Итоговая сумма')
 
     class Meta:
@@ -73,8 +73,8 @@ class Orders(models.Model):
         return f'{self.user.get_username()} - {self.date_create} - {self.status}'
 
 class OrderDetails(models.Model):
-    order_id = models.ForeignKey(to=Orders, on_delete=models.CASCADE, verbose_name='ИД заказа')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
+    order = models.ForeignKey(to=Orders, related_name='order_details', on_delete=models.CASCADE, verbose_name='ИД заказа')
+    product = models.ForeignKey(Product, related_name='product', on_delete=models.CASCADE, verbose_name='Продукт')
     count = models.IntegerField(verbose_name='Количество')
 
     class Meta:
