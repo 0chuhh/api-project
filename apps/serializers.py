@@ -59,4 +59,4 @@ class OrdersSerializer(serializers.ModelSerializer):
     status = StatusSerializer(read_only=True)
     class Meta:
         model = Orders
-        fields = ('id', 'address', 'delivery', 'pay', 'number', 'status','total_sum', 'order_details')
+        fields = ('id', 'address', 'delivery', 'pay', 'number', 'status','total_sum', 'order_details', 'date_create')

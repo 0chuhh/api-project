@@ -148,7 +148,7 @@ class OrdersApiView(viewsets.ModelViewSet):
         order.save()
         for detail in request.data['products']:
             orderdetails = OrderDetails.objects.get_or_create(
-                order_id=order, product=Product.objects.get(pk=detail['id']), count=detail['count'])
+                order=order, product=Product.objects.get(pk=detail['id']), count=detail['count'])
         return Response({'ok': 'ok'})
 
 
