@@ -1,15 +1,23 @@
 from rest_framework import serializers
 from .models import Category, Status, Product,Pay, Delivery, Orders, OrderDetails
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
+
+class GroupSerializer(serializers.ModelSerializer):    
+    class Meta:
+        model = Group
+        fields = ('name',)
 
 class UserSerializer(serializers.Serializer):
     email = serializers.EmailField(required=False)
     username = serializers.CharField(max_length=100)
     password = serializers.CharField(max_length=100)
-
+    groups = GroupSerializer(many=True, read_only=True, required=False)
     class Meta:
         model = User
         fields = '__all__'
+
+
+
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,7 +32,7 @@ class StatusSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(read_only=True)
+    category = CategorySerializer(read_only=True, required=False)
     class Meta:
         model = Product
         fields = ('id', 'name', 'price', 'category', 'description', 'image')
