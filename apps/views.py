@@ -94,12 +94,7 @@ class Users(viewsets.ModelViewSet):
             })
         return Response('error')
 
-    def get_permissions(self):
-        if self.action == 'list':
-            permission_classes = [permissions.IsAdminUser]
-        else:
-            permission_classes = []
-        return [permission() for permission in permission_classes]
+    
 
 
 class CategoryApiView(viewsets.ModelViewSet):
