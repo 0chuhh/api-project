@@ -118,11 +118,9 @@ class CategoryApiView(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action == 'list':
-            permission_classes = [IsUser]
-        if self.action == 'create':
-            permission_classes = [IsManager]
-        else:
             permission_classes = []
+        else:
+            permission_classes = [IsManager]
         return [permission() for permission in permission_classes]
 
 class StatusApiView(generics.ListCreateAPIView):
@@ -156,11 +154,9 @@ class ProductApiView(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action == 'list':
-            permission_classes = [IsUser]
-        if self.action == 'create':
-            permission_classes = [IsManager]
-        else:
             permission_classes = []
+        else:
+            permission_classes = [IsManager]
         return [permission() for permission in permission_classes]
 
 
